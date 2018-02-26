@@ -63,7 +63,7 @@ done
 if [ "$TEST" -eq "1" ]; then
     #check openshift pman
     echo "Testing if openshift pman can be reached with hello"
-    pfurl --verb POST --raw --http pman-myproject.127.0.0.1.nip.io/api/v1/cmd --jsonwrapper 'payload' --msg \
+    pfurl --verb POST --raw --url http://pman-myproject.127.0.0.1.nip.io/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
      '{  "action": "hello",
              "meta": {
                      "askAbout":     "sysinfo",
@@ -73,7 +73,7 @@ if [ "$TEST" -eq "1" ]; then
     
     #check pfioh
     echo "Testing if openshift pfioh can be reached with hello"
-    pfurl --verb POST --raw --http 127.0.0.1:5055/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
+    pfurl --verb POST --raw --url http://pfioh-myproject.127.0.0.1.nip.io/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
      '{  "action": "hello",
              "meta": {
                      "askAbout":     "sysinfo",
@@ -83,26 +83,24 @@ if [ "$TEST" -eq "1" ]; then
 
     #check CUBE user chris
     echo "Testing if the backend can be reached by user chris"
-    pfurl --auth chris:chris1234 --verb GET --raw --http 127.0.0.1:8000/api/v1/ \
-        --quiet --jsonpprintindent 4
+    pfurl --auth chris:chris1234 --verb GET --raw --url http://127.0.0.1:8000/api/v1/ --quiet --jsonpprintindent 4
     #check CUBE user CUBE
     echo "Testing if the backend can be reached by user cube"
-    pfurl --auth cube:cube1234 --verb GET --raw --http 127.0.0.1:8000/api/v1/ \
-        --quiet --jsonpprintindent 4
+    pfurl --auth cube:cube1234 --verb GET --raw --url http://127.0.0.1:8000/api/v1/ --quiet --jsonpprintindent 4
     
     #check pfcon --hangs
     echo "Testing if local pman and pfioh can be reached through pfcon"
-    pfurl --verb POST --raw --http 127.0.0.1:5005/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
+    pfurl --verb POST --raw --url http://127.0.0.1:5005/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
     '{  "action": "hello",
         "meta": {
                     "askAbout":     "sysinfo",
                     "echoBack":      "Hi there!",
-                    "service":       "host"
+                    "service":       "chris-docker-dev"
                 }
     }'
 
     echo "Testing if remote pman and pfioh can be reached with hello"
-    pfurl --verb POST --raw --http 127.0.0.1:5005/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
+    pfurl --verb POST --raw --url http://127.0.0.1:5005/api/v1/cmd --httpResponseBodyParse --jsonwrapper 'payload' --msg \
     '{  "action": "hello",
         "meta": {
                     "askAbout":     "sysinfo",
@@ -124,15 +122,12 @@ if [ "$DEPS" -eq "1" ];then
     git clone https://github.com/FNNDSC/pman.git
     git clone https://github.com/FNNDSC/pfioh.git
     git clone https://github.com/FNNDSC/ChRIS_ultron_backEnd.git
-    git clone https://github.com/FNNDSC/pfurl.git
 
     #install deps for pip
     sudo dnf install redhat-rpm-config gcc-c++ python3-devel
 
     #install pfurl
-    pushd pfurl/
-    sudo pip3 install .
-    popd   
+    sudo pip3 install --user pfurl
 
     #install and configure docker
     sudo dnf install docker -y
