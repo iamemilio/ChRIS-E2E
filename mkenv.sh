@@ -127,7 +127,7 @@ if [ "$DEPS" -eq "1" ];then
     sudo dnf install redhat-rpm-config gcc-c++ python3-devel
 
     #install pfurl
-    sudo pip3 install --user pfurl
+    pip3 install --user pfurl
 
     #install and configure docker
     sudo dnf install docker -y
